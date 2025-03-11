@@ -1,0 +1,18 @@
+---
+elasticsearch_version: "8.17.3"
+kibana_version: "8.17.3"
+
+elasticsearch_user: "elasticsearch"
+elasticsearch_group: "elasticsearch"
+elasticsearch_install_dir: "/usr/bin/local/elasticsearch"
+elasticsearch_data_dir: "/var/lib/elasticsearch"
+elasticsearch_config_dir: "/etc/elasticsearch"
+
+kibana_user: "kibana"
+kibana_group: "kibana"
+kibana_install_dir: "/usr/bin/local/kibana"
+kibana_config_dir: "/etc/kibana"
+
+elasticsearch_port: 9200
+kibana_port: 5601
+

@@ -1,0 +1,41 @@
+---
+- name: Download Fluent Bit GPG key and convert to GPG format
+  ansible.builtin.shell: |
+    curl -fsSL https://packages.fluentbit.io/fluentbit.key | gpg --dearmor -o /usr/share/keyrings/fluentbit-keyring.gpg
+  args:
+    creates: /usr/share/keyrings/fluentbit-keyring.gpg
+
+- name: Add repo fluent-bit
+  copy:
+    src: fluent-bit.list
+    dest: /etc/apt/sources.list.d/fluent-bit.list
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Update APT cache and install Fluent Bit
+  apt:
+    name: fluent-bit
+    state: present
+    update_cache: yes
+
+- name: Create Fluent Bit user
+  ansible.builtin.user:
+    name: fluentbit
+    shell: /usr/sbin/nologin
+    create_home: no
+
+- name: Deploy Fluent Bit configuration
+  template:
+    src: fluent-bit.conf.j2
+    dest: /etc/fluent-bit/fluent-bit.conf
+    owner: fluentbit
+    group: fluentbit
+    mode: '0644'
+  notify: Restart Fluentbit
+
+- name: Start and enable service
+  service:
+    name: fluent-bit
+    state: started
+    enabled: yes

@@ -1,0 +1,56 @@
+---
+- name: Create user and group for Node Exporter
+  user:
+    name: "{{ node_exporter_user }}"
+    system: true
+    shell: /sbin/nologin
+    create_home: false
+
+- name: Dowloaded node_exporter
+  get_url:
+    url: "{{ node_exporter_download_url }}"
+    dest: "/tmp/node_exporter.tar.gz"
+    mode: '0644'
+
+- name: Extract node_exporter
+  unarchive:
+    src: "/tmp/node_exporter.tar.gz"
+    dest: "/tmp"
+    mode: '0644'
+    remote_src: yes
+
+- name: Installing node_exporter
+  copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: "{{ node_exporter_bin_dir }}/prometheus-node-exporter"
+    mode: '0755'
+    owner: root
+    group: root
+    remote_src: yes
+  
+- name: Copy the service file node_exporter
+  template:
+    src: prometheus-node-exporter.service.j2
+    dest: /etc/systemd/system/prometheus-node-exporter.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Node Exporter
+
+- name: Started and enabled node_exporter
+  systemd_service:
+    daemon_reload: true
+    name: prometheus-node-exporter
+    enabled: yes
+    state: started
+
+- name: Copy the config file Prometheus
+  template:
+    src: prometheus1.yml.j2
+    dest: "{{ prometheus_config_file }}"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: '0644'
+  notify: Restart Prometheus
+
+

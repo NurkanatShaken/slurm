@@ -1,0 +1,13 @@
+[Unit]
+Description=Elasticsearch
+After=network.target
+
+[Service]
+User={{ elasticsearch_user }}
+Group={{ elasticsearch_group }}
+ExecStart={{ elasticsearch_install_dir }}/bin/elasticsearch
+Restart=always
+LimitMEMLOCK=infinity
+
+[Install]
+WantedBy=multi-user.target

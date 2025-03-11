@@ -1,0 +1,4 @@
+- name: Restart Fluentbit
+  systemd:
+    name: fluent-bit
+    state: restarted

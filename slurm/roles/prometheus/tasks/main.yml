@@ -1,0 +1,70 @@
+- name: Create user and group for Prometheus
+  user:
+    name: "{{ prometheus_user }}"
+    system: true
+    shell: /sbin/nologin
+    create_home: false
+    home: "{{ prometheus_home }}"
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: '0755'
+  loop:
+    - "{{ prometheus_home }}"
+    - "{{ prometheus_data_dir }}"
+
+- name: Dowloaded Prometheus
+  get_url:
+    url: "{{ prometheus_download_url }}"
+    dest: "/tmp/prometheus.tar.gz"
+    mode: '0644'
+
+- name: Extract Prometheus
+  unarchive:
+    src: "/tmp/prometheus.tar.gz"
+    dest: "/tmp"
+    mode: '0644'
+    remote_src: yes
+
+- name: Installing Prometheus
+  copy:
+    src: "/tmp/prometheus-{{ prometheus_version }}.linux-amd64/{{ item }}"
+    dest: "{{ prometheus_bin_dir }}/{{ item }}"
+    mode: '0755'
+    owner: root
+    group: root
+    remote_src: yes
+  loop:
+    - prometheus
+    - promtool
+
+- name: Copy the config file Prometheus
+  template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_config_file }}"
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    mode: '0644'
+  notify: Restart Prometheus
+
+- name: Copy the service file Prometheus
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Prometheus
+
+- name: Started and enabled Prometheus
+  systemd_service:
+    daemon_reload: true
+    name: prometheus
+    enabled: yes
+    state: started
+
+    

@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Allow required ports
+      ansible.builtin.ufw:
+        rule: allow
+        port: "{{ item }}"
+        proto: tcp
+      loop:
+        - 9200   # Elasticsearch
+        - 5601   # Kibana
+        - 9100   # Node Exporter
+        - 9090   # Prometheus
+        - 5170   # Fluent Bit
+
+  roles:
+    - prometheus
+    - node_exporter
+    - elasticsearch_kibana
+    - fluentbit
+

@@ -1,0 +1,40 @@
+[Unit]
+Description=Monitoring system and time series database
+Documentation=https://prometheus.io/docs/introduction/overview/ man:prometheus(1)
+After=time-sync.target
+
+[Service]
+Restart=on-abnormal
+User={{ prometheus_user }}
+Group={{ prometheus_group }}
+ExecStart={{ prometheus_bin_dir }}/prometheus --config.file={{ prometheus_config_file }} --storage.tsdb.path={{ prometheus_data_dir }}
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+# systemd hardening-options
+AmbientCapabilities=
+CapabilityBoundingSet=
+DeviceAllow=/dev/null rw
+DevicePolicy=strict
+LimitMEMLOCK=0
+LockPersonality=true
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+PrivateUsers=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=full
+RemoveIPC=true
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target
+
+

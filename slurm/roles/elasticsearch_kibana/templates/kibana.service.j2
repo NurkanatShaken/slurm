@@ -1,0 +1,12 @@
+[Unit]
+Description=Kibana
+After=network.target
+
+[Service]
+User={{ kibana_user }}
+Group={{ kibana_group }}
+ExecStart={{ kibana_install_dir }}/bin/kibana --host 0.0.0.0
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

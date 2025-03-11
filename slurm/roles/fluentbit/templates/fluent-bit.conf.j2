@@ -1,0 +1,19 @@
+[SERVICE]
+    Flush        5
+    Log_Level    info
+    Parsers_File parsers.conf
+
+[INPUT]
+    Name        systemd
+    Tag         host.*
+    Read_From_Tail  true
+
+[OUTPUT]
+    Name        es
+    Match       *
+    Host        localhost
+    Port        9200
+    Index       fluentbit
+    Type        _doc
+    tls        on
+    tls.verify off
