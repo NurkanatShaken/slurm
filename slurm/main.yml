@@ -15,8 +15,8 @@
         - 5170   # Fluent Bit
 
   roles:
-    - prometheus
-    - node_exporter
+    #- prometheus
+    #- node_exporter
     - elasticsearch_kibana
     - fluentbit
 

@@ -63,10 +63,26 @@
     mode: '0644'
   notify: restart kibana
 
+- name: Enable and start Elasticsearch service
+  systemd:
+    name: elasticsearch
+    enabled: yes
+    state: started
+    daemon_reload: true
+
+- name: Enable and start Kibana service
+  systemd:
+    name: kibana
+    enabled: yes
+    state: started
+    daemon_reload: true
+
+
+
 - name: Configure Elasticsearch
   template:
     src: "elasticsearch.yml.j2"
-    dest: "/etc/elasticsearch/elasticsearch.yml"
+    dest: "{{ elasticsearch_install_dir }}/config/elasticsearch.yml"
     owner: "{{ elasticsearch_user }}"
     group: "{{ elasticsearch_group }}"
     mode: '0644'
@@ -82,16 +98,3 @@
   notify: restart kibana
 
 
-- name: Enable and start Elasticsearch service
-  systemd_service:
-    name: elasticsearch
-    enabled: yes
-    state: started
-    daemon_reload: true
-
-- name: Enable and start Kibana service
-  systemd_service:
-    name: kibana
-    enabled: yes
-    state: started
-    daemon_reload: true
